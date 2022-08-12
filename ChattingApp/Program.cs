@@ -1,4 +1,6 @@
 using ChattingApp.Installers;
+using FluentValidation.AspNetCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("ChattingPolicy");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

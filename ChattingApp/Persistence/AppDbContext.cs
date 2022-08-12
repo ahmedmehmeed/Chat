@@ -1,4 +1,4 @@
-﻿using ChattingApp.Persistence.Models;
+﻿using ChattingApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChattingApp.Controllers___Copy__2_
