@@ -1,5 +1,9 @@
+using ChattingApp.Domain.Models;
 using ChattingApp.Installers;
+using ChattingApp.Persistence.Interface;
+using ChattingApp.Persistence.Services;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,9 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.InstallServicesExtension(builder.Configuration);
 builder.Services.AddControllers();
+//builder.Services.AddScoped<IAccountService, AccountService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
 
 var app = builder.Build();
 
@@ -22,7 +29,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("ChattingPolicy");
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

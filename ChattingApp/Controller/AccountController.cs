@@ -1,9 +1,16 @@
 ﻿using AutoMapper;
-using ChattingApp.Controllers___Copy__2_;
 using ChattingApp.Domain.Models;
+using ChattingApp.Helper.Security.Tokens;
+using ChattingApp.Persistence;
+using ChattingApp.Persistence.Interface;
 using ChattingApp.Resource.Account;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -12,36 +19,63 @@ namespace ChattingApp.Controller
 
     public class AccountController : BaseApiController
     {
-        private readonly AppDbContext dbContxt;
-        private readonly IMapper mapper;
+        private readonly IAccountService accountService;
 
-        public AccountController(AppDbContext dbContxt, IMapper mapper)
+
+        public AccountController(IAccountService accountService)
         {
-            this.dbContxt = dbContxt;
-            this.mapper = mapper;
+            this.accountService = accountService;
+
         }
 
         [HttpPost("Register")]
-        public async Task<ActionResult<AppUsers>> Register([FromBody] RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
         {
-            if (await userExist(registerDto.name)) 
-                    return BadRequest("user is taken");
-            using var hmac = new HMACSHA512();
-            var user = new AppUsers
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+         var result =   await accountService.RegisterAsync(registerDto);
+            if (!result.IsAuthencated)
+                return BadRequest(result.Message);
+            return Ok(new{ token = result.Token});
+
+        }
+
+        //private async Task< bool> userExist(String username)
+        //{
+        //    return await dbContxt.Users.AnyAsync(x => x.Username == username);
+        //}
+
+
+
+        [HttpPost("Login")]
+        public async Task<ActionResult<AppUsers>> Login([FromBody] LoginDto loginDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(loginDto);
+            AuthModel result = await accountService.LoginAsync(loginDto);
+
+            //IsAuthencated ==>return false as default if don't occure any creatiuon for user 
+            if (!result.IsAuthencated)
+                return BadRequest(result.Message);
+            if (!string.IsNullOrEmpty(result.RefreshToken))
+                SetRefreshTokenInCookies(result.RefreshToken, result.RefreshTokenEXpiration);
+            // anomnyous object
+            return Ok(new { Token = result.Token, Roles = result.Roles, ExpireOn = result.RefreshTokenEXpiration });
+        }
+
+        private void SetRefreshTokenInCookies(string refreshTokenModel, DateTime ExpireOn)
+        {
+            //setting cookies 
+            CookieOptions cookiesOption = new()
             {
-                Username = registerDto.name,
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.password)),
-                PasswordSalt = hmac.Key
+                HttpOnly = true,
+                Expires = ExpireOn.ToLocalTime(),
+
             };
 
-            dbContxt.Add(user);
-            await dbContxt.SaveChangesAsync();
-            return user;
+            Response.Cookies.Append("RefreshToken", refreshTokenModel, cookiesOption);
+
         }
 
-        public async Task< bool> userExist(String username)
-        {
-            return await dbContxt.Users.AnyAsync(x => x.Username == username);
-        }
     }
 }

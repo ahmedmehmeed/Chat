@@ -1,4 +1,4 @@
-﻿namespace ChattingApp.Helper
+﻿namespace ChattingApp.Helper.Mapping
 {
     public class DomainToResource
     {

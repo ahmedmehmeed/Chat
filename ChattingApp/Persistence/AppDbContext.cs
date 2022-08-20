@@ -1,14 +1,14 @@
 ﻿using ChattingApp.Domain.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ChattingApp.Controllers___Copy__2_
+namespace ChattingApp.Persistence
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUsers>
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        public DbSet<AppUsers> Users { get; set; }
     }
 }
