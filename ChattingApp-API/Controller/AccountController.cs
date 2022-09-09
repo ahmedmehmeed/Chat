@@ -54,7 +54,7 @@ namespace ChattingApp.Controller
                 return BadRequest(loginDto);
             AuthModel result = await accountService.LoginAsync(loginDto);
 
-            //IsAuthencated ==>return false as default if don't occure any creatiuon for user 
+            //IsAuthencated ==>return false as default if don't occure any creation for user 
             if (!result.IsAuthencated)
                 return BadRequest(result.Message);
             if (!string.IsNullOrEmpty(result.RefreshToken))

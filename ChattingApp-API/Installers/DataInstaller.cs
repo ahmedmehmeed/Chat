@@ -18,8 +18,6 @@ namespace ChattingApp.Installers
 
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITokenService, TokenService>();
-
-
         }
     }
 }
