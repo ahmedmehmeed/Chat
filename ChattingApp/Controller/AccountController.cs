@@ -60,7 +60,9 @@ namespace ChattingApp.Controller
             if (!string.IsNullOrEmpty(result.RefreshToken))
                 SetRefreshTokenInCookies(result.RefreshToken, result.RefreshTokenEXpiration);
             // anomnyous object
-            return Ok(new { Token = result.Token, Roles = result.Roles, ExpireOn = result.RefreshTokenEXpiration });
+            // return Ok(new { Token = result.Token, Roles = result.Roles, ExpireOn = result.RefreshTokenEXpiration });
+             return Ok(result);
+
         }
 
         private void SetRefreshTokenInCookies(string refreshTokenModel, DateTime ExpireOn)

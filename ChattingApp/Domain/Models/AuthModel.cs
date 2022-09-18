@@ -15,5 +15,6 @@ namespace ChattingApp.Domain.Models
         [JsonIgnore]
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenEXpiration { get; set; }
+        public bool IsSuccess { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace ChattingApp.Persistence.Services
                 {
                     errors += $"{error.Code} - {error.Description}";
                 }
-                return new AuthModel { Message = errors };
+                return new AuthModel { Message = errors ,IsSuccess=false};
             }
             
            await userManager.AddToRoleAsync(user, "User");
@@ -51,7 +51,8 @@ namespace ChattingApp.Persistence.Services
                 IsAuthencated = true,
                 Roles = new List<string> { "User" },
                 Token = new JwtSecurityTokenHandler().WriteToken(JwtSecurityToken),
-                Username = user.UserName
+                Username = user.UserName,
+                IsSuccess=true
             };
 
 
@@ -65,6 +66,7 @@ namespace ChattingApp.Persistence.Services
             if (user is null || !await userManager.CheckPasswordAsync(user, loginDto.password))
             {
                 authModel.Message = "Email Or Password invalid";
+                authModel.IsSuccess = false;
                 return authModel;
             }
             
@@ -75,6 +77,7 @@ namespace ChattingApp.Persistence.Services
             var UserRoles = await userManager.GetRolesAsync(user);
 
             authModel.IsAuthencated = true;
+            authModel.IsSuccess=true;
             authModel.Email = user.Email;
             authModel.Username = user.UserName;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(JwtToken);

@@ -1,4 +1,5 @@
 using ChattingApp.Domain.Models;
+using ChattingApp.Helper.Middlewares;
 using ChattingApp.Installers;
 using ChattingApp.Persistence.Interface;
 using ChattingApp.Persistence.Services;
@@ -27,6 +28,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors("ChattingPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
