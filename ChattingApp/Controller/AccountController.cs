@@ -4,6 +4,7 @@ using ChattingApp.Helper.Security.Tokens;
 using ChattingApp.Persistence;
 using ChattingApp.Persistence.Interface;
 using ChattingApp.Resource.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
