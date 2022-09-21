@@ -1,9 +1,9 @@
 ﻿using ChattingApp.Domain.Models;
 using ChattingApp.Resource.Account;
 
-namespace ChattingApp.Persistence.Interface
+namespace ChattingApp.Persistence.IRepositories
 {
-    public interface IAccountService
+    public interface IAccountRepository
     {
         Task<AuthModel> RegisterAsync(RegisterDto registerDto);
 

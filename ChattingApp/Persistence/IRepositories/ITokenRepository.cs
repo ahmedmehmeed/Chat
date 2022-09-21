@@ -2,9 +2,9 @@
 using ChattingApp.Helper.Security.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace ChattingApp.Persistence.Interfaces
+namespace ChattingApp.Persistence.IRepositories
 {
-    public interface ITokenService
+    public interface ITokenRepository
     {
         Task<JwtSecurityToken> CreateJwtToken(AppUsers user);
         RefreshToken CreateRefreshToken();

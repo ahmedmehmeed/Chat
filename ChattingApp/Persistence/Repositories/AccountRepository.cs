@@ -1,19 +1,18 @@
 ﻿using AutoMapper;
 using ChattingApp.Domain.Models;
-using ChattingApp.Persistence.Interface;
-using ChattingApp.Persistence.Interfaces;
+using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Resource.Account;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace ChattingApp.Persistence.Services
+namespace ChattingApp.Persistence.Repositories
 {
-    public class AccountService : IAccountService 
+    public class AccountRepository : IAccountRepository 
     {
         private readonly UserManager<AppUsers> userManager;
         private readonly IMapper Mapper;
-        private readonly ITokenService tokenService;
-        public AccountService(UserManager<AppUsers> userManager , IMapper mapper,ITokenService tokenService)
+        private readonly ITokenRepository tokenService;
+        public AccountRepository(UserManager<AppUsers> userManager , IMapper mapper,ITokenRepository tokenService)
         {
             this.userManager = userManager;
             Mapper = mapper;

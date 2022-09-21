@@ -1,6 +1,6 @@
 ﻿using ChattingApp.Domain.Models;
 using ChattingApp.Helper.Security.Tokens;
-using ChattingApp.Persistence.Interfaces;
+using ChattingApp.Persistence.IRepositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -9,13 +9,13 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ChattingApp.Persistence.Services
+namespace ChattingApp.Persistence.Repositories
 {
-    public class TokenService : ITokenService
+    public class TokenRepository : ITokenRepository
     {
         private readonly UserManager<AppUsers> userManager;
         private readonly JWT Jwt;
-        public TokenService(UserManager<AppUsers> userManager, IOptions<JWT> jwt)
+        public TokenRepository(UserManager<AppUsers> userManager, IOptions<JWT> jwt)
         {
             this.userManager = userManager;
             this.Jwt = jwt.Value;

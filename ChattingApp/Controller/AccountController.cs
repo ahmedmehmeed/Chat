@@ -2,7 +2,7 @@
 using ChattingApp.Domain.Models;
 using ChattingApp.Helper.Security.Tokens;
 using ChattingApp.Persistence;
-using ChattingApp.Persistence.Interface;
+using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Resource.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -20,10 +20,10 @@ namespace ChattingApp.Controller
 
     public class AccountController : BaseApiController
     {
-        private readonly IAccountService accountService;
+        private readonly IAccountRepository accountService;
 
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountRepository accountService)
         {
             this.accountService = accountService;
 

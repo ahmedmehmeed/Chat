@@ -1,43 +1,57 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ChattingApp.Domain.Models;
+using ChattingApp.Persistence.IRepositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ChattingApp.Controller
 {
+    [Authorize]
     public class UsersController : BaseApiController 
     {
-        // GET: api/<UsersController>
-        [HttpGet]
-        //[Authorize]
-        public IEnumerable<string> Get()
+        private readonly IUserRepository userRepository;
+
+        public UsersController(IUserRepository userRepository)
         {
-            return new string[] { "value1", "value2" };
+            this.userRepository = userRepository;
         }
+        // GET: api/<UsersController>
+        [HttpGet("GetAllUsers")]
+ 
+        public async Task<ActionResult<IQueryable<AppUsers>>>  Get()
+        {
+               var Users = await  userRepository.GetUsersAsync();
+                return Ok(Users);          
+        }
+
 
         // GET api/<UsersController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("GetUserById")]
+        public async Task<ActionResult<AppUsers>> Get(string id)
         {
-            return "value";
+           
+                var User = await userRepository.GetUserByIdAsync(id);
+            if (User is not null)
+                return Ok(User);
+            else
+                return NotFound();
         }
 
-        // POST api/<UsersController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+  
 
         // PUT api/<UsersController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("UpdateUSer")]
+        public void Put(string id, [FromBody] AppUsers appUsers)
         {
+            userRepository.UpdateUserAsync(id, appUsers);
         }
 
         // DELETE api/<UsersController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("DeleteUser")]
+        public void Delete(string id)
         {
+            userRepository.DeleteUserAsync(id);
         }
     }
 }

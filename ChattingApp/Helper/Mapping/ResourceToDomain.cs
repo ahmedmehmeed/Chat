@@ -11,7 +11,7 @@ namespace ChattingApp.Helper.Mapping
         public ResourceToDomain()
         {
             CreateMap<RegisterDto, AppUsers>()
-               .ForMember(p => p.PasswordHash, opt => opt.MapFrom(x => x.Password));
+               .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src =>src.Password));
         }
     }
 }

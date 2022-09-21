@@ -1,8 +1,7 @@
 ﻿
 using ChattingApp.Persistence;
-using ChattingApp.Persistence.Interface;
-using ChattingApp.Persistence.Interfaces;
-using ChattingApp.Persistence.Services;
+using ChattingApp.Persistence.IRepositories;
+using ChattingApp.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChattingApp.Installers
@@ -16,8 +15,9 @@ namespace ChattingApp.Installers
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<ITokenRepository, TokenRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
         }
     }
 }
