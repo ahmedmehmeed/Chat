@@ -1,7 +1,9 @@
 ﻿
 using ChattingApp.Persistence;
 using ChattingApp.Persistence.IRepositories;
+using ChattingApp.Persistence.IServices;
 using ChattingApp.Persistence.Repositories;
+using ChattingApp.Persistence.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChattingApp.Installers
@@ -18,6 +20,8 @@ namespace ChattingApp.Installers
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<ITokenRepository, TokenRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPhotoRepository, PhotoRepository>();
+            services.AddScoped<IUploadPhotoService, UploadPhotoService>();
         }
     }
 }

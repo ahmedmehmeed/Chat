@@ -79,6 +79,7 @@ namespace ChattingApp.Persistence.Repositories
             authModel.IsSuccess=true;
             authModel.Email = user.Email;
             authModel.Username = user.UserName;
+            authModel.UserId = user.Id;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(JwtToken);
             // authModel.TokenExpiration = JwtToken.ValidTo;
             authModel.Roles = UserRoles.ToList();

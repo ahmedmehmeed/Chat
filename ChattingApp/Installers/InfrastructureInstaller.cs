@@ -1,5 +1,6 @@
 ﻿using ChattingApp.Domain.Models;
 using ChattingApp.Helper.Security.Tokens;
+using ChattingApp.Helper.Third_Party;
 using ChattingApp.Persistence;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,6 +30,7 @@ namespace ChattingApp.Installers
             //configuration mapping between jwt class & jwt  object data
             services.Configure<JWT>(configuration.GetSection("JWT"));
 
+            services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
             //config identity 
             //services.AddIdentity<AppUsers, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
             services.AddIdentity<AppUsers, IdentityRole>(options =>

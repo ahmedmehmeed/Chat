@@ -42,17 +42,22 @@ namespace ChattingApp.Persistence.Repositories
             });
         }
 
-        public void UpdateUserAsync(string Id, AppUsers appUsers)
+        public async Task<int> UpdateUserAsync(UserUpdateDto userUpdateDto)
         {
-            appDbContext.Entry(appUsers).State = EntityState.Modified;
+             AppUsers user = await appDbContext.Users.FirstOrDefaultAsync(x => x.Id == userUpdateDto.Id);
+             var userMapping = mapper.Map(userUpdateDto, user);
+             appDbContext.Entry(userMapping).State = EntityState.Modified;
+             return await appDbContext.SaveChangesAsync();
+
         }
 
-        public   void DeleteUserAsync(string Id)
+
+        public int  DeleteUserAsync(string Id)
         {
 
           var user =  appDbContext.Users.FirstOrDefault(a => a.Id == Id);
             appDbContext.Remove(user);
-            appDbContext.SaveChanges();
+          return  appDbContext.SaveChanges();
 
         }
 

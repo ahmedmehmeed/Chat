@@ -1,6 +1,8 @@
-﻿namespace ChattingApp.Resource.User
+﻿using ChattingApp.Domain;
+
+namespace ChattingApp.Resource.User
 {
-    public class PhotoDto
+    public class PhotoDto:BaseResponse
     {
         public int Id { get; set; }
         public string? Url { get; set; }

@@ -9,8 +9,8 @@ namespace ChattingApp.Persistence.IRepositories
         Task<IQueryable<AppUsers>> GetUsersAsync();
         Task<UserResponseDto> GetUserByIdAsync(string Id);
         Task<AppUsers> GetUserByNameAsync(string UserName);
-        void UpdateUserAsync(string Id, AppUsers appUsers);
-        void DeleteUserAsync(string Id);
+        Task<int> UpdateUserAsync(UserUpdateDto userUpdateDto);
+        int DeleteUserAsync(string Id);
         Task<bool> SaveChangesAsync();
 
 
