@@ -29,6 +29,8 @@ namespace ChattingApp.Persistence.Repositories
                    return new AuthModel { Message = "Username is already registerd! " };
 
            var user =   Mapper.Map<AppUsers>(registerDto);
+            user.Created = DateTime.Now;
+            user.LastActive=DateTime.Now;
 
           var result =   await userManager.CreateAsync(user,registerDto.Password);
             if (!result.Succeeded)

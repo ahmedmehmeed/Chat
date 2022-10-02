@@ -13,11 +13,9 @@ namespace ChattingApp.Helper.Mapping
             CreateMap<AppUsers, UserResponseDto>()
                 .ForMember(dest => dest.PhotoDto, opt => opt.MapFrom(src => src.Photos))
                 .ForMember(des => des.age, opt => opt.MapFrom(src => src.BirthDate.CalculateAge()))
-                .ForMember(des => des.PhotoURL, opt => opt.MapFrom(src => src.Photos.FirstOrDefault(p => p.IsMain).Url));
-            
-
+                .ForMember(des => des.PhotoURL, opt => opt.MapFrom(src => src.Photos.FirstOrDefault(p => p.IsMain).Url)).ReverseMap();         
             CreateMap<Photo, PhotoDto>();
-            CreateMap<UserResponseDto, UserUpdateDto>().ReverseMap();
+          
 
         }
     }

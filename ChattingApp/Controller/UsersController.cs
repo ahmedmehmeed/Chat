@@ -69,7 +69,7 @@ namespace ChattingApp.Controller
             if (uploadphoto is null) return BadRequest();
 
             var rowsEffected = await uploadPhotoService.UploadPhotoAsync(uploadphoto);
-                if (rowsEffected > 0) return Ok();
+                if (rowsEffected > 0) return Ok();  
             return BadRequest();
         }
 

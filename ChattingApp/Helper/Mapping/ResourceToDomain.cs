@@ -18,6 +18,7 @@ namespace ChattingApp.Helper.Mapping
                    .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.PhotoDto));
             CreateMap<UserResponseDto, AppUsers>()
                      .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.PhotoDto));
+            CreateMap<UserResponseDto, UserUpdateDto>().ReverseMap();
 
 
 
