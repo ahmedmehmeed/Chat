@@ -23,6 +23,14 @@ namespace ChattingApp.Persistence.Services
             this.appDbContext = appDbContext;
         }
 
+        public async Task<int> DeletePhotoAsync(string publicId)
+        {
+            var userPhoto = await appDbContext.Photos.FirstOrDefaultAsync(p => p.PublicId == publicId);
+            var result = await photoRepository.DeletePhotoAsync(publicId);
+            appDbContext.Entry(userPhoto).State = EntityState.Deleted;
+            return await appDbContext.SaveChangesAsync();
+        }
+
         public async Task<int> UploadPhotoAsync(Uploadphoto uploadphoto)
         {
             var user = await appDbContext.Users.Include(p => p.Photos).FirstOrDefaultAsync(x => x.Id == uploadphoto.UserId);
@@ -31,20 +39,26 @@ namespace ChattingApp.Persistence.Services
             var photo = new Photo
             {
                 Url = result.SecureUrl.AbsoluteUri,
-                PublicId = result.PublicId
+                PublicId = result.PublicId,
+                IsMain=uploadphoto.IsMain,
             };
             if (user.Photos.Count == 0)
             {
                 photo.IsMain = true;
             }
+            else
+            {
+              var mainPhoto= user.Photos.FirstOrDefault(p => p.IsMain == true);
+                if(mainPhoto is not null && uploadphoto.IsMain == true)
+                {
+                   mainPhoto.IsMain = false;
+                    user.Photos.Add(mainPhoto);
+                }
+            }
 
             user.Photos.Add(photo);
             appDbContext.Entry(user).State = EntityState.Modified;
             return await appDbContext.SaveChangesAsync();
-             
-
-               
-
         }
 
         //public async Task<int> UploadPhotoAsync(Uploadphoto uploadphoto)
@@ -68,6 +82,7 @@ namespace ChattingApp.Persistence.Services
         //    return await userRepository.UpdateUserAsync(userMapped);
 
         //}
+
 
 
     }

@@ -9,6 +9,7 @@ namespace ChattingApp.Persistence
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
+        public DbSet<Photo> Photos { get; set; }
 
     }
 }

@@ -75,10 +75,14 @@ namespace ChattingApp.Controller
 
 
         // DELETE api/<UsersController>/5
-        [HttpDelete("DeleteUser")]
-        public void Delete(string id)
+        [HttpDelete("Delete-photo")]
+        public async Task<ActionResult> Delete(string PublicId)
         {
-            userRepository.DeleteUserAsync(id);
+            if (string.IsNullOrEmpty(PublicId)) return BadRequest();
+
+            var rowsEffected = await uploadPhotoService.DeletePhotoAsync(PublicId);
+                        if (rowsEffected > 0) return Ok();
+            return BadRequest();
         }
     }
 }
