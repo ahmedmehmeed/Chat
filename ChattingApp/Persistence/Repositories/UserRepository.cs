@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using ChattingApp.Domain.Models;
+using ChattingApp.Helper.Pagination;
 using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Resource.User;
 using Microsoft.AspNetCore.Identity;
@@ -34,11 +35,12 @@ namespace ChattingApp.Persistence.Repositories
             return await appDbContext.Users.Include(p => p.Photos).FirstOrDefaultAsync(x => x.UserName == UserName);
         }
 
-        public async Task<IQueryable<AppUsers>> GetUsersAsync()
+        public async Task<PagedList<AppUsers>> GetUsersAsync(UserReqDto userReqDto)
         {
             return await Task.Run(() =>
             {
-                return userManager.Users.Include(p=>p.Photos).AsQueryable();
+                var users = userManager.Users.Include(p=>p.Photos).AsQueryable();
+              return  PagedList<AppUsers>.ToPagedList(users, userReqDto.PageSize, userReqDto.PageNumber);
             });
         }
 

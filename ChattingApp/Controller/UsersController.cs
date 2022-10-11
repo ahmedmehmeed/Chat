@@ -1,5 +1,7 @@
 ﻿using ChattingApp.Domain;
 using ChattingApp.Domain.Models;
+using ChattingApp.Extensions;
+using ChattingApp.Helper.Pagination;
 using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Persistence.IServices;
 using ChattingApp.Resource.User;
@@ -22,11 +24,13 @@ namespace ChattingApp.Controller
             this.uploadPhotoService = uploadPhotservice;
         }
         // GET: api/<UsersController>
-        [HttpGet("GetAllUsers")]
+        [HttpPost("GetAllUsers")]
  
-        public async Task<ActionResult<IQueryable<AppUsers>>>  Get()
+        public async Task<ActionResult>  Get(UserReqDto userReqDto)
         {
-               var Users = await  userRepository.GetUsersAsync();
+               var Users = await  userRepository.GetUsersAsync(userReqDto);
+               Response.AddPaginationToHeader(Users.CurrentPage, Users.PageSize, Users.TotalCount, Users.TotalPages);
+
                 return Ok(Users);          
         }
 
