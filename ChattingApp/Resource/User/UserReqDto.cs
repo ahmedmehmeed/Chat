@@ -6,6 +6,8 @@ namespace ChattingApp.Resource.User
     {
         public string? userName { get; set; }
         public string? Gender { get; set; }
+        public bool lastActive { get; set; }
+        public bool CreateDate { get; set; }
 
 
     }
