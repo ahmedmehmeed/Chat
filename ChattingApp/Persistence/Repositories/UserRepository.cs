@@ -28,8 +28,7 @@ namespace ChattingApp.Persistence.Repositories
         public async Task<UserResponseDto> GetUserByIdAsync(string Id)
         {
           var  user=  await appDbContext.Users.Include(p => p.Photos).FirstOrDefaultAsync(x => x.Id == Id);
-            return mapper.Map<UserResponseDto>(user);
-           
+            return mapper.Map<UserResponseDto>(user); 
         }
 
         public async Task<AppUsers> GetUserByNameAsync(string UserName)
@@ -64,6 +63,10 @@ namespace ChattingApp.Persistence.Repositories
 
         private static Expression<Func<AppUsers, bool>> GetUserFilters(UserReqDto userReqDto)
         {
+          
+            var minBirthDate = DateTime.Now.AddYears(-userReqDto.maxAge);
+            var maxBirthDate = DateTime.Now.AddYears(-userReqDto.minAge);
+
             Expression<Func<AppUsers, bool>> predicate = c => true;
             if (!string.IsNullOrEmpty(userReqDto.userName))
             {
@@ -74,6 +77,8 @@ namespace ChattingApp.Persistence.Repositories
             {
                 predicate = predicate.And(p => p.Gender == userReqDto.Gender);
             }
+
+            predicate = predicate.And(p => p.BirthDate >= minBirthDate && p.BirthDate <= maxBirthDate);
 
             return predicate;
         }

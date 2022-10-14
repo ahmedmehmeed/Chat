@@ -6,17 +6,11 @@ namespace ChattingApp.Domain.Models
 {
     public class AppUsers : IdentityUser
     {
-    
-        //public string? Username { get; set; }
-        //public byte[]? PasswordHash { get; set; }
-        //public byte[]? PasswordSalt { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-
         public DateTime BirthDate { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastActive { get; set; }
-
         public string? KnownAs { get; set; }
         public string? Gender  { get; set; }
         public string? Introduction  { get; set; }
@@ -24,9 +18,12 @@ namespace ChattingApp.Domain.Models
         public string? Interests  { get; set; }
         public string? City  { get; set; }
         public string? Country  { get; set; }
-        public ICollection<Photo>? Photos  { get; set; }
+        public ICollection<Photo>? Photos  { get; private set; } = new HashSet<Photo>();
+        public ICollection<UserFollow>? Followers  { get; private set; } = new HashSet<UserFollow>();
+        public ICollection<UserFollow>? Followees { get; private set; } = new HashSet<UserFollow>();
+       
         // list of refresh token but one only active 
-        public List<RefreshToken>? RefreshTokens { get; set; }
+        public ICollection<RefreshToken>? RefreshTokens { get; private set; } = new HashSet<RefreshToken>();
 
     }
 }

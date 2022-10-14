@@ -4,6 +4,7 @@ using ChattingApp.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChattingApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221013114554_followees-table")]
+    partial class followeestable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -151,19 +153,34 @@ namespace ChattingApp.Migrations
                     b.ToTable("Photos");
                 });
 
-            modelBuilder.Entity("ChattingApp.Domain.Models.UserFollow", b =>
+            modelBuilder.Entity("ChattingApp.Domain.Models.UserFollowee", b =>
                 {
                     b.Property<string>("SourceUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserFollowedId")
+                    b.Property<string>("FolloweeUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("SourceUserId", "UserFollowedId");
+                    b.HasKey("SourceUserId", "FolloweeUserId");
 
-                    b.HasIndex("UserFollowedId");
+                    b.HasIndex("FolloweeUserId");
 
-                    b.ToTable("Follows");
+                    b.ToTable("Followees");
+                });
+
+            modelBuilder.Entity("ChattingApp.Domain.Models.UserFollower", b =>
+                {
+                    b.Property<string>("SourceUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FollowerUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("SourceUserId", "FollowerUserId");
+
+                    b.HasIndex("FollowerUserId");
+
+                    b.ToTable("Followers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -346,23 +363,42 @@ namespace ChattingApp.Migrations
                     b.Navigation("appUsers");
                 });
 
-            modelBuilder.Entity("ChattingApp.Domain.Models.UserFollow", b =>
+            modelBuilder.Entity("ChattingApp.Domain.Models.UserFollowee", b =>
                 {
+                    b.HasOne("ChattingApp.Domain.Models.AppUsers", "FolloweeUser")
+                        .WithMany()
+                        .HasForeignKey("FolloweeUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChattingApp.Domain.Models.AppUsers", "SourceUser")
+                        .WithMany("Followees")
+                        .HasForeignKey("SourceUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FolloweeUser");
+
+                    b.Navigation("SourceUser");
+                });
+
+            modelBuilder.Entity("ChattingApp.Domain.Models.UserFollower", b =>
+                {
+                    b.HasOne("ChattingApp.Domain.Models.AppUsers", "FollowerUser")
+                        .WithMany()
+                        .HasForeignKey("FollowerUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ChattingApp.Domain.Models.AppUsers", "SourceUser")
                         .WithMany("Followers")
                         .HasForeignKey("SourceUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChattingApp.Domain.Models.AppUsers", "UserFollowed")
-                        .WithMany("Followees")
-                        .HasForeignKey("UserFollowedId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    b.Navigation("FollowerUser");
 
                     b.Navigation("SourceUser");
-
-                    b.Navigation("UserFollowed");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

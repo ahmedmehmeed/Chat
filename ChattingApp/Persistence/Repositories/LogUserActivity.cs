@@ -11,9 +11,9 @@ namespace ChattingApp.Persistence.Repositories
         {
             var resultContext = await next();
             if (!resultContext.HttpContext.User.Identity.IsAuthenticated) return;
-            var userId = resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-           var repo=  resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
-             var user = await repo.GetUserByNameAsync(userId);
+            var username = resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var repo=  resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
+            var user = await repo.GetUserByNameAsync(username);
             user.LastActive = DateTime.Now;
             await repo.SaveChangesAsync();
         }

@@ -8,7 +8,8 @@ namespace ChattingApp.Resource.User
         public string? Gender { get; set; }
         public bool lastActive { get; set; }
         public bool CreateDate { get; set; }
-
+        public int minAge { get; set; }
+        public int maxAge { get; set; }
 
     }
 }

@@ -8,8 +8,30 @@ namespace ChattingApp.Persistence
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {
+           
         }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<UserFollow> Follows { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<UserFollow>()
+                   .HasKey(k => new { k.SourceUserId, k.UserFollowedId });
+
+            builder.Entity<UserFollow>()
+                   .HasOne(s => s.SourceUser)
+                   .WithMany(f => f.Followers)
+                   .HasForeignKey(s => s.SourceUserId)
+                   .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<UserFollow>()
+                   .HasOne(s => s.UserFollowed)
+                   .WithMany(f => f.Followees)
+                   .HasForeignKey(s => s.UserFollowedId)
+                   .OnDelete(DeleteBehavior.NoAction);
+        }
 
     }
 }
