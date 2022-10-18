@@ -3,8 +3,8 @@
     public class UserFollow
     {
         public string? SourceUserId { get; set; }
-        public AppUsers? SourceUser { get; set; } = new();
+        public AppUsers? SourceUser { get; set; } 
         public string? UserFollowedId { get; set; }
-        public AppUsers? UserFollowed { get; set; } = new();
+        public AppUsers? UserFollowed { get; set; } 
     }
 }

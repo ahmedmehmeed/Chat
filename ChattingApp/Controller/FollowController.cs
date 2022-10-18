@@ -1,4 +1,5 @@
 ﻿using ChattingApp.Domain.Models;
+using ChattingApp.Persistence;
 using ChattingApp.Persistence.IRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +13,6 @@ namespace ChattingApp.Controller
     {
         private readonly IFollowsRepository followRepository;
         private readonly IUserRepository userRepository;
-
         public FollowController(IFollowsRepository followRepository, IUserRepository userRepository)
         {
             this.followRepository = followRepository;
@@ -20,7 +20,7 @@ namespace ChattingApp.Controller
         }
 
         // GET: api/<UsersController>
-        [HttpPost("AddFollow")]
+        [HttpGet("AddFollow")]
 
         public async Task<ActionResult> AddFollow(string FollowedId)
         {
@@ -29,13 +29,15 @@ namespace ChattingApp.Controller
             var followedUser = await userRepository.GetUserByIdAsync(FollowedId);
             if (followedUser == null) return NotFound();
             var userFollow = await followRepository.GetUserFollow(sourceUser.Id, FollowedId);
-            if (userFollow != null) return BadRequest("you already follow this member");
-            userFollow = new UserFollow
+            if (userFollow != null) { return BadRequest("you already follow this member"); }
+            var newfollowee = new UserFollow
             {
-                SourceUserId = sourceUser.Id,
+                SourceUserId=sourceUser.Id,
                 UserFollowedId = FollowedId
             };
-            sourceUser.Followees.Add(userFollow);
+
+            followRepository.AddNewFollowee(newfollowee);
+
             if (await userRepository.SaveChangesAsync()) return Ok();
             return BadRequest(" failed to follow user");
         }

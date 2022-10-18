@@ -4,6 +4,7 @@ using ChattingApp.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChattingApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221016162545_message")]
+    partial class message
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,7 +137,7 @@ namespace ChattingApp.Migrations
                     b.Property<DateTime>("DateMessageSent")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DateRead")
+                    b.Property<DateTime>("DateRead")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ReceiverId")
@@ -185,6 +187,7 @@ namespace ChattingApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("appUsersId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -401,7 +404,9 @@ namespace ChattingApp.Migrations
                 {
                     b.HasOne("ChattingApp.Domain.Models.AppUsers", "appUsers")
                         .WithMany("Photos")
-                        .HasForeignKey("appUsersId");
+                        .HasForeignKey("appUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("appUsers");
                 });

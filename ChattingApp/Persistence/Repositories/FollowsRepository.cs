@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using ChattingApp.Domain.Models;
+using ChattingApp.Extensions;
 using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Resource.Follow;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 
 namespace ChattingApp.Persistence.Repositories
 {
@@ -19,6 +21,11 @@ namespace ChattingApp.Persistence.Repositories
 
         public IMapper Mapper { get; }
 
+        public void AddNewFollowee(UserFollow userFollow)
+        {
+            appDbContext.Follows.Add(userFollow);
+        }
+
         public async Task<UserFollow> GetUserFollow(string sourceUserId, string sserFollowedId)
         {
           return  await appDbContext.Follows.FindAsync(sourceUserId, sserFollowedId);
@@ -26,20 +33,23 @@ namespace ChattingApp.Persistence.Repositories
 
         public async Task<IEnumerable<FollowDto>> GetUserFollowers(string predicate, string userId)
         {
-           var users = appDbContext.Users.OrderBy(u => u.UserName).AsQueryable();
-            var followees = appDbContext.Follows.AsQueryable();
+            var users = appDbContext.Users.Include(p=>p.Photos).OrderBy(u => u.UserName).Include(p=>p.Photos).ToList();
+            var followees = appDbContext.Follows.ToList();
             if (predicate == "follow")
             {
-                followees = followees.Where(l => l.SourceUserId == userId);
-                users = followees.Select(u => u.UserFollowed);
+                followees = followees.Where(l => l.SourceUserId == userId).ToList();
+                users = followees.Select(u => u.UserFollowed).ToList(); 
             }
             if (predicate == "followby")
             {
-                followees = followees.Where(l => l.UserFollowedId == userId);
-                users = followees.Select(u => u.SourceUser);
+                //check list if empty fire exception in mapping
+                followees = followees.Where(l => l.UserFollowedId == userId).ToList();
+                users = followees.Select(u => u.SourceUser).ToList();
             }
-            return  mapper.Map<IEnumerable<FollowDto>>(users);
+            return mapper.Map<IEnumerable<FollowDto>>(users);
+
         }
+
 
         public async Task<AppUsers> GetUserWithFollowes(string userId)
         {

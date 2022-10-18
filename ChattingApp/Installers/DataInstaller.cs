@@ -24,6 +24,7 @@ namespace ChattingApp.Installers
             services.AddScoped<IFollowsRepository, FollowsRepository>();
             services.AddScoped<ILogUserActivity, LogUserActivity>();
             services.AddScoped<IUploadPhotoService, UploadPhotoService>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
         }
     }
 }

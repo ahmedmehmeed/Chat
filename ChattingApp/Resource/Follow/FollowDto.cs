@@ -1,4 +1,6 @@
-﻿namespace ChattingApp.Resource.Follow
+﻿using ChattingApp.Domain.Models;
+
+namespace ChattingApp.Resource.Follow
 {
     public class FollowDto
     {

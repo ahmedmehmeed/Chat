@@ -30,7 +30,6 @@ namespace ChattingApp.Controller
         {
                var Users = await  userRepository.GetUsersAsync(userReqDto);
                Response.AddPaginationToHeader(Users.CurrentPage, Users.PageSize, Users.TotalCount, Users.TotalPages);
-
                 return Ok(Users);          
         }
 

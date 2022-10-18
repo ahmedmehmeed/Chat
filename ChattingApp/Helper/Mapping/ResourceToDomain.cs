@@ -14,10 +14,13 @@ namespace ChattingApp.Helper.Mapping
         {
             CreateMap<RegisterDto, AppUsers>()
                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src =>src.Password));
+
             CreateMap<UserUpdateDto, AppUsers>()
                    .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.PhotoDto));
+
             CreateMap<UserResponseDto, AppUsers>()
                      .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.PhotoDto));
+
             CreateMap<UserResponseDto, UserUpdateDto>().ReverseMap();
 
 

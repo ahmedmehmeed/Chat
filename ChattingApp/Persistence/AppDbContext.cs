@@ -12,6 +12,7 @@ namespace ChattingApp.Persistence
         }
         public DbSet<Photo> Photos { get; set; }
         public DbSet<UserFollow> Follows { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -30,6 +31,16 @@ namespace ChattingApp.Persistence
                    .HasOne(s => s.UserFollowed)
                    .WithMany(f => f.Followees)
                    .HasForeignKey(s => s.UserFollowedId)
+                   .OnDelete(DeleteBehavior.NoAction);
+
+           builder.Entity<Message>()
+                   .HasOne(s => s.Sender)
+                   .WithMany(f => f.MessagesSent)
+                   .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Message>()
+                   .HasOne(s => s.Receiver)
+                   .WithMany(f => f.MessageRecieved)
                    .OnDelete(DeleteBehavior.NoAction);
         }
 

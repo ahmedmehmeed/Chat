@@ -11,9 +11,9 @@ namespace ChattingApp.Domain.Models
         public string? PublicId { get; set; }
 
         [ForeignKey("appUsersId")]
-        public AppUsers appUsers { get; set; }
+        public AppUsers? appUsers { get; set; }
 
-        public string appUsersId { get; set; }
+        public string? appUsersId { get; set; }
 
 
     }
