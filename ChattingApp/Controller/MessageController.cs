@@ -29,7 +29,7 @@ namespace ChattingApp.Controller
         {
             if (string.IsNullOrEmpty(sendMessageDto.ReceiverUsername))
                 return BadRequest();
-            var SenderUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value.ToLower();
+            var SenderUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var SenderUser = await userRepository.GetUserByNameAsync(SenderUsername);
             var ReceiverUser = await userRepository.GetUserByNameAsync(sendMessageDto.ReceiverUsername);
             if (ReceiverUser == null) return NotFound();

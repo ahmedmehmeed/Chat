@@ -11,7 +11,7 @@
         public string? ReceiverPhotoURL { get; set; }
         public string? Content { get; set; }
         public DateTime? DateRead { get; set; }
-        public DateTime? DateMessageSent { get; set; }
+        public DateTime DateMessageSent { get; set; }
 
     }
 } 

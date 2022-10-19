@@ -8,6 +8,8 @@ namespace ChattingApp.Resource.User
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }
+        public string? UserName { get; set; }
+
         public int age { get; set; }
         public string? PhotoURL { get; set; }
         public DateTime BirthDate { get; set; }
