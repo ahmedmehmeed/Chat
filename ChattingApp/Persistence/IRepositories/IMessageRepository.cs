@@ -7,8 +7,9 @@ namespace ChattingApp.Persistence.IRepositories
     public interface IMessageRepository
     {
         void AddMeesage(Message message);
-        void DeleteMeesage(Message message);
-        Task<Message> GetMessageAsync(Guid id);
+        void DeleteMessage(Message message);
+        void DeleteMessagesThread(string senderId , string receiverId);
+        Task<Message> GetMessageByIdAsync(Guid id);
         Task<PagedList <MessageDto>> GetUserMessageAsync(MessageReqDto messageReqDto);
 
         Task<List<IEnumerable<MessageDto>>> GetMessageThreadAsync(string currentUsername,string recieverUsername);

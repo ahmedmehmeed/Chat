@@ -50,19 +50,21 @@ namespace ChattingApp.Controller
 
         }
 
-        [HttpPost("GetMessages")]
-        public async Task<ActionResult<MessageDto>> GetMessage([FromBody] MessageReqDto messageReqDto)
-        {
-            if (string.IsNullOrEmpty(messageReqDto.ReceiverUsername))
-                return BadRequest();
-            var SenderUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value.ToLower();
-            var ReceiverUser = await userRepository.GetUserByNameAsync(messageReqDto.ReceiverUsername);
-            if (ReceiverUser == null) return NotFound();
-            messageReqDto.SenderUsername = SenderUsername;
-            var messages =  messageRepository.GetReceiverMessage(messageReqDto);
-            Response.AddPaginationToHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
-            return Ok(messages);         
-        }
+        //[HttpPost("GetMessages")]
+        //public async Task<ActionResult<MessageDto>> GetMessage([FromBody] MessageReqDto messageReqDto)
+        //{
+        //    if (string.IsNullOrEmpty(messageReqDto.ReceiverUsername))
+        //        return BadRequest();
+        //    var SenderUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value.ToLower();
+        //    var ReceiverUser = await userRepository.GetUserByNameAsync(messageReqDto.ReceiverUsername);
+        //    if (ReceiverUser == null) return NotFound();
+        //    messageReqDto.SenderUsername = SenderUsername;
+        //    var messages =  messageRepository.GetReceiverMessage(messageReqDto);
+        //    Response.AddPaginationToHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
+        //    return Ok(messages);         
+        //}
+
+
 
         [HttpGet("GetMessagesThread/{username}")]
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessageThread(string username)
@@ -74,5 +76,35 @@ namespace ChattingApp.Controller
             //Response.AddPaginationToHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
             return Ok(messages);
         }
+
+        [HttpDelete("DeleteMessage")]
+        public async Task<ActionResult> DeleteMessage(Guid id)
+        {
+            if (id==null)
+                return BadRequest();
+           var message= await messageRepository.GetMessageByIdAsync(id);
+                       messageRepository.DeleteMessage(message);
+
+            if (await messageRepository.SaveAllChangesAsync())
+                return Ok();
+            return BadRequest("Sorry Failed To Delete Message");
+        }
+
+        [HttpDelete("DeleteMessagesThread")]
+        public async Task<ActionResult> DeleteMessagesThread(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                return BadRequest();
+            var currentUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var SenderUser = await userRepository.GetUserByNameAsync(currentUsername);
+
+
+            messageRepository.DeleteMessagesThread(SenderUser.Id, userId);
+
+            if (await messageRepository.SaveAllChangesAsync())
+                return Ok();
+            return BadRequest("Sorry Failed To Delete Chat");
+        }
+
     }
 }

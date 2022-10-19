@@ -23,13 +23,24 @@ namespace ChattingApp.Persistence.Repositories
             appDbContext.Messages.Add(message);
         }
 
-        public void DeleteMeesage(Message message) 
+        public void DeleteMessage(Message message) 
         {
             appDbContext.Messages.Remove(message);
         }
 
+        public void DeleteMessagesThread(string senderId, string receiverId)
+        {
+            var messages =  appDbContext.Messages
+                              .Where(
+                                     m => m.SenderId == senderId && m.ReceiverId == receiverId
+                                    || m.SenderId == receiverId && m.ReceiverId == senderId ).ToList();
+            foreach (var message in messages)
+            {
+                this.DeleteMessage(message);
+            }
+        }
 
-        public  async Task<Message> GetMessageAsync(Guid id) 
+        public  async Task<Message> GetMessageByIdAsync(Guid id) 
         {
             return await appDbContext.Messages.FirstOrDefaultAsync(m => m.Id == id);
         }
