@@ -33,7 +33,7 @@ var app = builder.Build();
 //try
 //{
 //    var context = services.GetRequiredService<UserManager<AppUsers>>();
-//    await SeedData.SeedUserData(context);
+//    await SeedData.AddRoleToUsers(context);
 //}
 //catch (Exception)
 //{

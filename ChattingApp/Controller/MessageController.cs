@@ -65,7 +65,6 @@ namespace ChattingApp.Controller
         //}
 
 
-
         [HttpGet("GetMessagesThread/{username}")]
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessageThread(string username)
         {

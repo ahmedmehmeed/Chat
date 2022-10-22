@@ -28,7 +28,7 @@ namespace ChattingApp.Persistence.Repositories
             if (await userManager.FindByNameAsync(registerDto.UserName) is not null) 
                    return new AuthModel { Message = "Username is already registerd! " };
 
-           var user =   Mapper.Map<AppUsers>(registerDto);
+           var user = Mapper.Map<AppUsers>(registerDto);
             user.Created = DateTime.Now;
             user.LastActive=DateTime.Now;
 
@@ -43,14 +43,15 @@ namespace ChattingApp.Persistence.Repositories
                 return new AuthModel { Message = errors ,IsSuccess=false};
             }
             
-           await userManager.AddToRoleAsync(user, "User");
+           await userManager.AddToRoleAsync(user, "Admin");
             var JwtSecurityToken = await tokenService.CreateJwtToken(user);
             return new AuthModel
             {
                 Email = user.Email,
                 //TokenExpiration = JwtSecurityToken.ValidTo,
                 IsAuthencated = true,
-                Roles = new List<string> { "User" },
+                // Roles = new List<string> {"User"},
+                Roles = (List<string>) await userManager.GetRolesAsync(user),
                 Token = new JwtSecurityTokenHandler().WriteToken(JwtSecurityToken),
                 Username = user.UserName,
                 IsSuccess=true

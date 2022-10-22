@@ -14,6 +14,7 @@ namespace ChattingApp.Domain.Models
             MessageRecieved = new HashSet<Message>();
             MessagesSent = new HashSet<Message>();
             RefreshTokens = new HashSet<RefreshToken>();
+     
         }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
@@ -30,7 +31,6 @@ namespace ChattingApp.Domain.Models
         public ICollection<Photo>? Photos  { get; private set; } 
         public ICollection<UserFollow>? Followers  { get; private set; }
         public ICollection<UserFollow>? Followees { get; private set; }
-
         public ICollection<Message>? MessagesSent { get; private set; }
         public ICollection<Message>? MessageRecieved { get; private set; }
 

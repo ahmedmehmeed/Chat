@@ -73,6 +73,12 @@ namespace ChattingApp.Installers
 
                    };
                });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequiredAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin","Moderator"));
+
+            });
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {

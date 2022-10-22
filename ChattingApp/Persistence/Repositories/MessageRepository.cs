@@ -98,6 +98,27 @@ namespace ChattingApp.Persistence.Repositories
             return messageDto;
         }
 
+        public async Task<List<IEnumerable<MessageDto>>> GetAllChatsAsync(MessageReqDto messageReqDto)
+        {
+            var messages = await appDbContext.Messages
+                   .Include(s => s.Sender).ThenInclude(p => p.Photos)
+                   .Include(r => r.Receiver).ThenInclude(p => p.Photos)
+                   .Where(
+                          m => m.SenderUsername == messageReqDto.CurrentUsername
+                         || m.ReceiverUsername == messageReqDto.CurrentUsername).OrderBy(k => k.DateMessageSent).ToListAsync();
+
+            var messageDto = new List<IEnumerable<MessageDto>>();
+            var mapped = mapper.Map<IEnumerable<MessageDto>>(messages).ToList();
+            var messagesMapped = mapped.ToLookup(k => k.DateMessageSent.ToString("MM/dd/yyyy"));
+            foreach (var g in messagesMapped)
+            {
+
+                messageDto.Add(g.OrderBy(k => k.DateMessageSent).Select(m => m));
+
+            }
+            return messageDto;
+
+        }
 
         public async Task<bool> SaveAllChangesAsync()
         {
