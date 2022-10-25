@@ -21,8 +21,10 @@ namespace ChattingApp.Installers
             {
                 options.AddPolicy("ChattingPolicy", builder =>
                 builder
-                .AllowAnyOrigin()
+               // .AllowAnyOrigin()
+                .AllowCredentials()
                 .AllowAnyMethod()
+                .WithOrigins("http://localhost:4200")
                 .AllowAnyHeader()
                 );
             });
@@ -55,11 +57,11 @@ namespace ChattingApp.Installers
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
             })
-            .AddJwtBearer(o =>
+            .AddJwtBearer(opt =>
                {
-                   o.RequireHttpsMetadata = false;
-                   o.SaveToken = false;
-                   o.TokenValidationParameters = new TokenValidationParameters
+                   opt.RequireHttpsMetadata = false;
+                   opt.SaveToken = false;
+                   opt.TokenValidationParameters = new TokenValidationParameters
                    {
                        ValidateIssuerSigningKey = true,
                        ValidateIssuer = true,
@@ -72,6 +74,22 @@ namespace ChattingApp.Installers
                        ClockSkew = TimeSpan.Zero,
 
                    };
+
+                   //options to add token signalR request
+                   opt.Events = new JwtBearerEvents
+                   {
+                       OnMessageReceived = context =>
+                       {
+                           var accessToken = context.Request.Query["access_token"];
+                           var path = context.HttpContext.Request.Path;
+                           if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                           {
+                               context.Token = accessToken;
+                           }
+                           return Task.CompletedTask;
+                       }
+                   };
+                   
                });
             services.AddAuthorization(options =>
             {
@@ -107,6 +125,7 @@ namespace ChattingApp.Installers
                   });
             });
 
+            services.AddSignalR();
 
         }
     }

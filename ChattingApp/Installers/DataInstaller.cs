@@ -4,6 +4,7 @@ using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Persistence.IServices;
 using ChattingApp.Persistence.Repositories;
 using ChattingApp.Persistence.Services;
+using ChattingApp.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChattingApp.Installers
@@ -25,6 +26,8 @@ namespace ChattingApp.Installers
             services.AddScoped<ILogUserActivity, LogUserActivity>();
             services.AddScoped<IUploadPhotoService, UploadPhotoService>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+
+            services.AddSingleton<PresenceTracker>(); 
         }
     }
 }

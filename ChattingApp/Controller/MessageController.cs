@@ -24,6 +24,8 @@ namespace ChattingApp.Controller
             this.mapper = mapper;
         }
         
+
+        
         [HttpPost("SendMessage")]
         public async Task<ActionResult<MessageDto>> SendMessage([FromBody] SendMessageDto sendMessageDto)
         {
@@ -50,19 +52,6 @@ namespace ChattingApp.Controller
 
         }
 
-        //[HttpPost("GetMessages")]
-        //public async Task<ActionResult<MessageDto>> GetMessage([FromBody] MessageReqDto messageReqDto)
-        //{
-        //    if (string.IsNullOrEmpty(messageReqDto.ReceiverUsername))
-        //        return BadRequest();
-        //    var SenderUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value.ToLower();
-        //    var ReceiverUser = await userRepository.GetUserByNameAsync(messageReqDto.ReceiverUsername);
-        //    if (ReceiverUser == null) return NotFound();
-        //    messageReqDto.SenderUsername = SenderUsername;
-        //    var messages =  messageRepository.GetReceiverMessage(messageReqDto);
-        //    Response.AddPaginationToHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
-        //    return Ok(messages);         
-        //}
 
 
         [HttpGet("GetMessagesThread/{username}")]

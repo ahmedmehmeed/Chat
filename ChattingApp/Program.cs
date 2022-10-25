@@ -5,6 +5,7 @@ using ChattingApp.Persistence;
 using ChattingApp.Persistence.DataSeed;
 using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Persistence.Repositories;
+using ChattingApp.SignalR;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -55,5 +56,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<PresenceHub>("hubs/presence");
+app.MapHub<MessageHub>("hubs/message");
 
 app.Run();

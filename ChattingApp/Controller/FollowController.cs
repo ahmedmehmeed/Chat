@@ -43,6 +43,7 @@ namespace ChattingApp.Controller
         }
 
 
+
         [HttpGet("GetFollows")]
         public async Task<ActionResult> GetFollows(string predicate)
         {
