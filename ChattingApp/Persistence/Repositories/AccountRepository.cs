@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using ChattingApp.Domain.Models;
+using ChattingApp.Helper.Third_Party_Settings;
 using ChattingApp.Persistence.IRepositories;
+using ChattingApp.Persistence.IServices;
 using ChattingApp.Resource.Account;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
+using System.Web;
 
 namespace ChattingApp.Persistence.Repositories
 {
@@ -12,27 +16,35 @@ namespace ChattingApp.Persistence.Repositories
         private readonly UserManager<AppUsers> userManager;
         private readonly IMapper Mapper;
         private readonly ITokenRepository tokenService;
-        public AccountRepository(UserManager<AppUsers> userManager , IMapper mapper,ITokenRepository tokenService)
+        private readonly IMessagerService messagerService;
+        private readonly SmtpSettings smtpSettings;
+
+        public IOptions<SmtpSettings> SmtpOptions { get; }
+
+        public AccountRepository(UserManager<AppUsers> userManager , IMapper mapper,ITokenRepository tokenService,IOptions<SmtpSettings> smtpOptions,IMessagerService messagerService)
         {
             this.userManager = userManager;
+            this.tokenService = tokenService;
+            this.messagerService = messagerService;
             Mapper = mapper;
-           this.tokenService = tokenService;
+            smtpSettings = smtpOptions.Value;
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterDto registerDto)
         {
-            AuthModel authModel = new AuthModel();
+             AuthModel authModel = new AuthModel();
 
              if(  await  userManager.FindByEmailAsync(registerDto.Email) is not null)
                   return new AuthModel { Message = "Email is already registerd! " };
-            if (await userManager.FindByNameAsync(registerDto.UserName) is not null) 
+             if (await userManager.FindByNameAsync(registerDto.UserName) is not null) 
                    return new AuthModel { Message = "Username is already registerd! " };
 
-           var user = Mapper.Map<AppUsers>(registerDto);
+            var user = Mapper.Map<AppUsers>(registerDto);
             user.Created = DateTime.Now;
             user.LastActive=DateTime.Now;
 
-          var result =   await userManager.CreateAsync(user,registerDto.Password);
+
+            var result =   await userManager.CreateAsync(user,registerDto.Password);
        
             if (!result.Succeeded)
             {
@@ -44,8 +56,29 @@ namespace ChattingApp.Persistence.Repositories
                 return new AuthModel { Message = errors ,IsSuccess=false};
             }
             
-           await userManager.AddToRoleAsync(user, "Admin");
+            await userManager.AddToRoleAsync(user, "Admin");
             var JwtSecurityToken = await tokenService.CreateJwtToken(user);
+
+            #region send Confirmation mail
+            var createdUser = await userManager.FindByNameAsync(user.UserName);
+            var token=await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var uriBuilder = new UriBuilder(smtpSettings.ConfirmEmail);
+            var query= HttpUtility.ParseQueryString(uriBuilder.Query);
+            query["token"]=token;
+            query["userid"] = createdUser.Id;
+            uriBuilder.Query = query.ToString();
+            var urlString=uriBuilder.ToString();
+            var filePath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Templates\\Emails\\ConfirmationEmail.html";
+            var str = new StreamReader(filePath);
+            var mailText = str.ReadToEnd();
+            mailText = mailText.Replace("{{ConfirmURL}}", urlString);
+            str.Close();
+            this.messagerService.SendMailAsync(user.Email, "Confirm your Email", mailText);
+
+
+            #endregion
+
+
             return new AuthModel
             {
                 Email = user.Email,

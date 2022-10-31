@@ -21,6 +21,7 @@ namespace ChattingApp.Persistence.Services
         }
 
 
+
         public async Task SendMailAsync(string mailTo, string subject, string body, IList<IFormFile> attachments = null)
         {
             var email = new MimeMessage
@@ -61,10 +62,14 @@ namespace ChattingApp.Persistence.Services
             smtp.Disconnect(true);
         }
 
-        public Task SendAccountVerificationEmail(string mailTo)
+        public async Task<bool> ConfirmEmailAsync(string token, string userid)
         {
-            throw new NotImplementedException();
-        }
+          var user=  await userManager.FindByIdAsync(userid);
+          var result = await userManager.ConfirmEmailAsync(user, token);
+            if(result.Succeeded)
+                return true;
+            return false;
 
+        }
     }
 }

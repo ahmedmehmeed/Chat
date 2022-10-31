@@ -30,10 +30,11 @@ namespace ChattingApp.Installers
                 );
             });
 
-            //configuration mapping between jwt class & jwt  object data
+            //configuration mapping between setting section to  class 
             services.Configure<JWT>(configuration.GetSection("JWT"));
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
             services.Configure<SmtpSettings>(configuration.GetSection("MessagerSetting:MailSettings"));
+
             //login with google
             services.AddAuthentication().AddGoogle((opt =>
             {
@@ -46,6 +47,7 @@ namespace ChattingApp.Installers
             services.AddIdentity<AppUsers, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = false;
+                //options.SignIn.RequireConfirmedEmail = true;
             })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();

@@ -3,6 +3,7 @@ using ChattingApp.Domain.Models;
 using ChattingApp.Helper.Security.Tokens;
 using ChattingApp.Persistence;
 using ChattingApp.Persistence.IRepositories;
+using ChattingApp.Persistence.IServices;
 using ChattingApp.Resource.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,12 +22,12 @@ namespace ChattingApp.Controller
     public class AccountController : BaseApiController
     {
         private readonly IAccountRepository accountService;
+        private readonly IMessagerService messagerService;
 
-
-        public AccountController(IAccountRepository accountService)
+        public AccountController(IAccountRepository accountService, IMessagerService messagerService)
         {
             this.accountService = accountService;
-
+            this.messagerService = messagerService;
         }
 
         [HttpPost("Register")]
@@ -80,5 +81,14 @@ namespace ChattingApp.Controller
 
         }
 
+
+        [HttpPost("Confirm-Email")]
+        public async Task<ActionResult> ConfirmEmail([FromQuery] string token, string userid)
+        {
+            if (await messagerService.ConfirmEmailAsync(token, userid))
+                return Ok();
+            return BadRequest();
+
+        }
     }
 }

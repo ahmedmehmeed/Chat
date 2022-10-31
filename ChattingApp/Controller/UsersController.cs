@@ -20,20 +20,19 @@ namespace ChattingApp.Controller
         private readonly IUploadPhotoService uploadPhotoService;
         private readonly IMessagerService messagerService;
 
-        public UsersController(IUserRepository userRepository,IUploadPhotoService uploadPhotservice,IMessagerService messagerService )
+        public UsersController(
+            IUserRepository userRepository,
+            IUploadPhotoService uploadPhotservice,
+            IMessagerService messagerService 
+            )
         {
             this.userRepository = userRepository;
             this.uploadPhotoService = uploadPhotservice;
             this.messagerService = messagerService;
         }
 
-        [HttpPost("Send-Mail")]
-        public async Task<ActionResult> SendMail([FromForm] MailReqDto mailReqDto)
-        {
-            await messagerService.SendMailAsync(mailReqDto.MailTo, mailReqDto.Subject, mailReqDto.Body, mailReqDto.Attachments);
-            return Ok();
-        }
 
+          
         [HttpPost("Send-Welcome-Mail")]
         public async Task<ActionResult> SendWelcomeMail([FromForm] MailReqDto mailReqDto)
         {
