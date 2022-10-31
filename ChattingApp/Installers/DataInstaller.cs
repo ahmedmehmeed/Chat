@@ -26,6 +26,7 @@ namespace ChattingApp.Installers
             services.AddScoped<ILogUserActivity, LogUserActivity>();
             services.AddScoped<IUploadPhotoService, UploadPhotoService>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IMessagerService, MessagerService>();
 
             services.AddSingleton<PresenceTracker>(); 
         }

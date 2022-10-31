@@ -34,7 +34,7 @@ var app = builder.Build();
 //try
 //{
 //    var context = services.GetRequiredService<UserManager<AppUsers>>();
-//    await SeedData.AddRoleToUsers(context);
+//    await SeedData.SeedUserData(context);
 //}
 //catch (Exception)
 //{

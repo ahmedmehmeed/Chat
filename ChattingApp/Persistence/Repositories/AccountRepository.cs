@@ -33,6 +33,7 @@ namespace ChattingApp.Persistence.Repositories
             user.LastActive=DateTime.Now;
 
           var result =   await userManager.CreateAsync(user,registerDto.Password);
+       
             if (!result.Succeeded)
             {
                 var errors = string.Empty;
@@ -56,8 +57,6 @@ namespace ChattingApp.Persistence.Repositories
                 Username = user.UserName,
                 IsSuccess=true
             };
-
-
         }
 
         public async Task<AuthModel> LoginAsync(LoginDto loginDto)

@@ -4,6 +4,7 @@ using ChattingApp.Extensions;
 using ChattingApp.Helper.Pagination;
 using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Persistence.IServices;
+using ChattingApp.Resource.Messager;
 using ChattingApp.Resource.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,34 @@ namespace ChattingApp.Controller
     {
         private readonly IUserRepository userRepository;
         private readonly IUploadPhotoService uploadPhotoService;
+        private readonly IMessagerService messagerService;
 
-        public UsersController(IUserRepository userRepository,IUploadPhotoService uploadPhotservice)
+        public UsersController(IUserRepository userRepository,IUploadPhotoService uploadPhotservice,IMessagerService messagerService )
         {
             this.userRepository = userRepository;
             this.uploadPhotoService = uploadPhotservice;
+            this.messagerService = messagerService;
         }
+
+        [HttpPost("Send-Mail")]
+        public async Task<ActionResult> SendMail([FromForm] MailReqDto mailReqDto)
+        {
+            await messagerService.SendMailAsync(mailReqDto.MailTo, mailReqDto.Subject, mailReqDto.Body, mailReqDto.Attachments);
+            return Ok();
+        }
+
+        [HttpPost("Send-Welcome-Mail")]
+        public async Task<ActionResult> SendWelcomeMail([FromForm] MailReqDto mailReqDto)
+        {
+            var filePath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Templates\\Emails\\ConfirmationEmail.html";
+            var str = new StreamReader(filePath);
+            var mailText = str.ReadToEnd();
+            str.Close();
+            await messagerService.SendMailAsync(mailReqDto.MailTo, mailReqDto.Subject,mailText, mailReqDto.Attachments);
+            return Ok();
+        }
+
+
         // GET: api/<UsersController>
         [HttpPost("GetAllUsers")]
  

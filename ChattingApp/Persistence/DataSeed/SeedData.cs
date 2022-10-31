@@ -15,6 +15,7 @@ namespace ChattingApp.Persistence.DataSeed
             {
                 var Password = $"{User.UserName}@123";
                 User.PasswordHash = Password;
+                User.Email= $"{User.UserName}@gmail.com";
                 await userManager.CreateAsync(User, Password);
             }
 

@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 
 namespace ChattingApp.SignalR
 {
-    [Authorize]
+   
     public class PresenceHub:Hub
     {
         private readonly PresenceTracker presenceTracker;
         public PresenceHub(PresenceTracker presenceTracker)
         {
             this.presenceTracker = presenceTracker;
-      
         }
         public override async Task OnConnectedAsync()
         {

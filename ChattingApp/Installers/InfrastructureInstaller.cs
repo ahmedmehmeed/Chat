@@ -1,6 +1,7 @@
 ﻿using ChattingApp.Domain.Models;
 using ChattingApp.Helper.Security.Tokens;
 using ChattingApp.Helper.Third_Party;
+using ChattingApp.Helper.Third_Party_Settings;
 using ChattingApp.Persistence;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,10 +32,17 @@ namespace ChattingApp.Installers
 
             //configuration mapping between jwt class & jwt  object data
             services.Configure<JWT>(configuration.GetSection("JWT"));
-
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
+            services.Configure<SmtpSettings>(configuration.GetSection("MessagerSetting:MailSettings"));
+            //login with google
+            services.AddAuthentication().AddGoogle((opt =>
+            {
+                IConfigurationSection googleConfig = configuration.GetSection("Authentication:googleAuth");
+                opt.ClientId = googleConfig["ClientId"];
+                opt.ClientSecret = googleConfig["ClientSecret"];
+            }));
+
             //config identity 
-            //services.AddIdentity<AppUsers, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
             services.AddIdentity<AppUsers, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = false;
