@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ChattingApp.Domain.Models;
+using ChattingApp.Persistence;
 using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Resource.Message;
 using Microsoft.AspNetCore.SignalR;
@@ -9,14 +10,13 @@ namespace ChattingApp.SignalR
 {
     public class MessageHub:Hub
     {
-        private readonly IMessageRepository messageRepository;
-        private readonly IUserRepository userRepository;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 
-        public MessageHub(IMessageRepository messageRepository,IUserRepository userRepository,IMapper mapper)
+        public MessageHub(IUnitOfWork unitOfWork,IMapper mapper)
         {
-            this.messageRepository = messageRepository;
-            this.userRepository = userRepository;
+   
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
 
@@ -27,7 +27,9 @@ namespace ChattingApp.SignalR
             var otherUser = httpContext.Request.Query["user"].ToString();
             var groupName = $"{userName}-{otherUser}";
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            var messages = await messageRepository.GetMessageThreadAsync(userName, otherUser);
+            var messages = await unitOfWork.MessageRepository.GetMessageThreadAsync(userName, otherUser);
+
+            if (unitOfWork.HasChanges()) await unitOfWork.Commit();
             await Clients.Group(groupName).SendAsync("GetMessagesThread", messages);
         }
 
@@ -36,8 +38,8 @@ namespace ChattingApp.SignalR
             if (string.IsNullOrEmpty(sendMessageDto.ReceiverUsername))
                 throw new HubException("Receipted UserName Invalid");
             var SenderUsername = Context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var SenderUser = await userRepository.GetUserByNameAsync(SenderUsername);
-            var ReceiverUser = await userRepository.GetUserByNameAsync(sendMessageDto.ReceiverUsername);
+            var SenderUser = await unitOfWork.UserRepository.GetUserByNameAsync(SenderUsername);
+            var ReceiverUser = await unitOfWork.UserRepository.GetUserByNameAsync(sendMessageDto.ReceiverUsername);
             if (ReceiverUser == null) throw new HubException("Receipted UserName Not Existed");
             if (SenderUsername == sendMessageDto.ReceiverUsername.ToLower())
                 throw new HubException("You Cannot Send Messages To Yourself !");
@@ -49,8 +51,8 @@ namespace ChattingApp.SignalR
                 ReceiverUsername = ReceiverUser.UserName,
                 Content = sendMessageDto.Content
             };
-            messageRepository.AddMeesage(message);
-            if (await messageRepository.SaveAllChangesAsync())
+            unitOfWork.MessageRepository.AddMeesage(message);
+            if (await unitOfWork.Commit())
             {
                 var groupName = $"{SenderUsername}-{ReceiverUser.UserName}";
                 await Clients.Group(groupName).SendAsync("NewMessage", mapper.Map<MessageDto>(message));

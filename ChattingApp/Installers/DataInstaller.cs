@@ -18,14 +18,17 @@ namespace ChattingApp.Installers
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
 
+            //services.AddScoped<IUserRepository, UserRepository>();
+            //services.AddScoped<IFollowsRepository, FollowsRepository>();
+            //services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<ITokenRepository, TokenRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPhotoRepository, PhotoRepository>();
-            services.AddScoped<IFollowsRepository, FollowsRepository>();
             services.AddScoped<ILogUserActivity, LogUserActivity>();
             services.AddScoped<IUploadPhotoService, UploadPhotoService>();
-            services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IMessagerService, MessagerService>();
 
             services.AddSingleton<PresenceTracker>(); 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ChattingApp.Domain.Models;
 using ChattingApp.Extensions;
+using ChattingApp.Persistence;
 using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Resource.Message;
 using Microsoft.AspNetCore.Authorization;
@@ -13,14 +14,12 @@ namespace ChattingApp.Controller
     [Authorize]
     public class MessageController : BaseApiController
     {
-        private readonly IMessageRepository messageRepository;
-        private readonly IUserRepository userRepository;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 
-        public MessageController(IMessageRepository messageRepository,IUserRepository userRepository,IMapper mapper )
+        public MessageController(IUnitOfWork unitOfWork,IMapper mapper )
         {
-            this.messageRepository = messageRepository;
-            this.userRepository = userRepository;
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
         
@@ -32,8 +31,8 @@ namespace ChattingApp.Controller
             if (string.IsNullOrEmpty(sendMessageDto.ReceiverUsername))
                 return BadRequest();
             var SenderUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var SenderUser = await userRepository.GetUserByNameAsync(SenderUsername);
-            var ReceiverUser = await userRepository.GetUserByNameAsync(sendMessageDto.ReceiverUsername);
+            var SenderUser = await unitOfWork.UserRepository.GetUserByNameAsync(SenderUsername);
+            var ReceiverUser = await unitOfWork.UserRepository.GetUserByNameAsync(sendMessageDto.ReceiverUsername);
             if (ReceiverUser == null) return NotFound();
             if (SenderUsername == sendMessageDto.ReceiverUsername.ToLower())
             return BadRequest("You Cannot Send Messages To Yourself !");
@@ -45,8 +44,8 @@ namespace ChattingApp.Controller
                 ReceiverUsername = ReceiverUser.UserName,
                 Content = sendMessageDto.Content
             };
-            messageRepository.AddMeesage(message);
-            if (await messageRepository.SaveAllChangesAsync())
+            unitOfWork.MessageRepository.AddMeesage(message);
+            if (await unitOfWork.Commit())
                 return Ok(mapper.Map<MessageDto>(message));
             return BadRequest("Sorry Failed To Send Message");
 
@@ -60,7 +59,7 @@ namespace ChattingApp.Controller
             if (string.IsNullOrEmpty(username))
                 return BadRequest();
             var currentUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var messages = await messageRepository.GetMessageThreadAsync(currentUsername, username);
+            var messages = await unitOfWork.MessageRepository.GetMessageThreadAsync(currentUsername, username);
             //Response.AddPaginationToHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
             return Ok(messages);
         }
@@ -70,10 +69,10 @@ namespace ChattingApp.Controller
         {
             if (id==null)
                 return BadRequest();
-           var message= await messageRepository.GetMessageByIdAsync(id);
-                       messageRepository.DeleteMessage(message);
+           var message= await unitOfWork.MessageRepository.GetMessageByIdAsync(id);
+            unitOfWork.MessageRepository.DeleteMessage(message);
 
-            if (await messageRepository.SaveAllChangesAsync())
+            if (await unitOfWork.Commit())
                 return Ok();
             return BadRequest("Sorry Failed To Delete Message");
         }
@@ -84,12 +83,12 @@ namespace ChattingApp.Controller
             if (string.IsNullOrEmpty(userId))
                 return BadRequest();
             var currentUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var SenderUser = await userRepository.GetUserByNameAsync(currentUsername);
+            var SenderUser = await unitOfWork.UserRepository.GetUserByNameAsync(currentUsername);
 
 
-            messageRepository.DeleteMessagesThread(SenderUser.Id, userId);
+            unitOfWork.MessageRepository.DeleteMessagesThread(SenderUser.Id, userId);
 
-            if (await messageRepository.SaveAllChangesAsync())
+            if (await unitOfWork.Commit())
                 return Ok();
             return BadRequest("Sorry Failed To Delete Chat");
         }

@@ -11,12 +11,13 @@ namespace ChattingApp.Controller
     [Authorize]
     public class FollowController : BaseApiController
     {
-        private readonly IFollowsRepository followRepository;
-        private readonly IUserRepository userRepository;
-        public FollowController(IFollowsRepository followRepository, IUserRepository userRepository)
+
+        private readonly IUnitOfWork unitOfWork;
+
+        public FollowController(IUnitOfWork unitOfWork)
         {
-            this.followRepository = followRepository;
-            this.userRepository = userRepository;
+
+            this.unitOfWork = unitOfWork;
         }
 
         // GET: api/<UsersController>
@@ -25,10 +26,10 @@ namespace ChattingApp.Controller
         public async Task<ActionResult> AddFollow(string FollowedId)
         {
             var sourceUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var sourceUser = await userRepository.GetUserByNameAsync(sourceUsername);
-            var followedUser = await userRepository.GetUserByIdAsync(FollowedId);
+            var sourceUser = await unitOfWork.UserRepository.GetUserByNameAsync(sourceUsername);
+            var followedUser = await unitOfWork.UserRepository.GetUserByIdAsync(FollowedId);
             if (followedUser == null) return NotFound();
-            var userFollow = await followRepository.GetUserFollow(sourceUser.Id, FollowedId);
+            var userFollow = await unitOfWork.FollowsRepository.GetUserFollow(sourceUser.Id, FollowedId);
             if (userFollow != null) { return BadRequest("you already follow this member"); }
             var newfollowee = new UserFollow
             {
@@ -36,9 +37,9 @@ namespace ChattingApp.Controller
                 UserFollowedId = FollowedId
             };
 
-            followRepository.AddNewFollowee(newfollowee);
+            unitOfWork.FollowsRepository.AddNewFollowee(newfollowee);
 
-            if (await userRepository.SaveChangesAsync()) return Ok();
+            if (await unitOfWork.Commit()) return Ok();
             return BadRequest(" failed to follow user");
         }
 
@@ -48,8 +49,8 @@ namespace ChattingApp.Controller
         public async Task<ActionResult> GetFollows(string predicate)
         {
             var sourceUsername = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var sourceUser = await userRepository.GetUserByNameAsync(sourceUsername);
-            var users = await  followRepository.GetUserFollowers(predicate, sourceUser.Id);
+            var sourceUser = await unitOfWork.UserRepository.GetUserByNameAsync(sourceUsername);
+            var users = await unitOfWork.FollowsRepository.GetUserFollowers(predicate, sourceUser.Id);
             return Ok(users);
         }
     }

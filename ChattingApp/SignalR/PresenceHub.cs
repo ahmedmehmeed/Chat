@@ -15,12 +15,13 @@ namespace ChattingApp.SignalR
         }
         public override async Task OnConnectedAsync()
         {
-            var userName = Context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            await presenceTracker.UserConnected(userName, Context.ConnectionId);
-            await Clients.Others.SendAsync("UserIsOnline", userName);
-            var currentOlineUsers=await  presenceTracker.GetOnlineUsers();
-            await Clients.All.SendAsync("OlineUsers", currentOlineUsers);
+           
+                var userName = Context.User?.FindFirst(ClaimTypes.NameIdentifier).Value;
+                await presenceTracker.UserConnected(userName, Context.ConnectionId);
+                await Clients.Others.SendAsync("UserIsOnline", userName);
+                var currentOlineUsers = await presenceTracker.GetOnlineUsers();
+                await Clients.All.SendAsync("OlineUsers", currentOlineUsers);
+ 
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)

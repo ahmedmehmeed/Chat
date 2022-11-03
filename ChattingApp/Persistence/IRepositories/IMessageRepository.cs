@@ -13,7 +13,6 @@ namespace ChattingApp.Persistence.IRepositories
         Task<PagedList <MessageDto>> GetUserMessageAsync(MessageReqDto messageReqDto);
         Task<List<IEnumerable<MessageDto>>> GetMessageThreadAsync(string currentUsername,string recieverUsername);
         Task<List<IEnumerable<MessageDto>>> GetAllChatsAsync(MessageReqDto messageReqDto);
-        Task<bool> SaveAllChangesAsync();
 
     }
 }

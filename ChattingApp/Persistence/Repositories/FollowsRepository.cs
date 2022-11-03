@@ -56,9 +56,5 @@ namespace ChattingApp.Persistence.Repositories
           return  await appDbContext.Users.Include(x => x.Followees).FirstOrDefaultAsync(x => x.Id==userId);
         }
 
-        public async Task<bool> SaveChangesAsync()
-        {
-            return await appDbContext.SaveChangesAsync() > 0;
-        }
     }
 }

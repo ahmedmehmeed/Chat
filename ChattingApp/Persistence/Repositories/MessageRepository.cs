@@ -120,10 +120,6 @@ namespace ChattingApp.Persistence.Repositories
 
         }
 
-        public async Task<bool> SaveAllChangesAsync()
-        {
-            return await appDbContext.SaveChangesAsync() > 0;
-        }
 
 
     }

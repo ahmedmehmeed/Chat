@@ -2,6 +2,7 @@
 using ChattingApp.Domain.Models;
 using ChattingApp.Extensions;
 using ChattingApp.Helper.Pagination;
+using ChattingApp.Persistence;
 using ChattingApp.Persistence.IRepositories;
 using ChattingApp.Persistence.IServices;
 using ChattingApp.Resource.Messager;
@@ -16,17 +17,17 @@ namespace ChattingApp.Controller
     [Authorize]
     public class UsersController : BaseApiController 
     {
-        private readonly IUserRepository userRepository;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IUploadPhotoService uploadPhotoService;
         private readonly IMessagerService messagerService;
 
         public UsersController(
-            IUserRepository userRepository,
+            IUnitOfWork unitOfWork,
             IUploadPhotoService uploadPhotservice,
             IMessagerService messagerService 
             )
         {
-            this.userRepository = userRepository;
+            this.unitOfWork = unitOfWork;
             this.uploadPhotoService = uploadPhotservice;
             this.messagerService = messagerService;
         }
@@ -50,7 +51,7 @@ namespace ChattingApp.Controller
  
         public async Task<ActionResult>  Get(UserReqDto userReqDto)
         {
-               var Users = await  userRepository.GetUsersAsync(userReqDto);
+               var Users = await unitOfWork.UserRepository.GetUsersAsync(userReqDto);
                Response.AddPaginationToHeader(Users.CurrentPage, Users.PageSize, Users.TotalCount, Users.TotalPages);
                 return Ok(Users);          
         }
@@ -61,7 +62,7 @@ namespace ChattingApp.Controller
         public async Task<ActionResult<AppUsers>> Get(string id)
         {
            
-                var User = await userRepository.GetUserByIdAsync(id);
+                var User = await unitOfWork.UserRepository.GetUserByIdAsync(id);
             if (User is not null)
                 return Ok(User);
             else
@@ -76,9 +77,10 @@ namespace ChattingApp.Controller
         {
             if(userUpdateDto is not null)
             {
-             var rowsAffected = await userRepository.UpdateUserAsync(userUpdateDto);
-                if (rowsAffected > 0) return Ok(new BaseResponse(true, 200, "User Updated Successfully"));
-                else return BadRequest(" Some thing went wrong failed to update !");
+                 await unitOfWork.UserRepository.UpdateUserAsync(userUpdateDto);
+                  if(await unitOfWork.Commit())
+                     return Ok(new BaseResponse(true, 200, "User Updated Successfully"));
+                 return BadRequest(" Some thing went wrong failed to update !");
             }
             else
             {

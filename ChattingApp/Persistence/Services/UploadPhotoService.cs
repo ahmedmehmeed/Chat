@@ -10,14 +10,13 @@ namespace ChattingApp.Persistence.Services
 {
     public class UploadPhotoService : IUploadPhotoService
     {
-        private readonly IUserRepository userRepository;
+
         private readonly IPhotoRepository photoRepository;
         private readonly IMapper mapper;
         private readonly AppDbContext appDbContext;
 
-        public UploadPhotoService(IUserRepository userRepository,IPhotoRepository photoRepository,IMapper mapper, AppDbContext appDbContext)
+        public UploadPhotoService(IPhotoRepository photoRepository,IMapper mapper, AppDbContext appDbContext)
         {
-            this.userRepository = userRepository;
             this.photoRepository = photoRepository;
             this.mapper = mapper;
             this.appDbContext = appDbContext;

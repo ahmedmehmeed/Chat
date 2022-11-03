@@ -12,10 +12,10 @@ namespace ChattingApp.Persistence.Repositories
             var resultContext = await next();
             if (!resultContext.HttpContext.User.Identity.IsAuthenticated) return;
             var username = resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var repo=  resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
-            var user = await repo.GetUserByNameAsync(username);
-            user.LastActive = DateTime.Now;
-            await repo.SaveChangesAsync();
+            var uow=  resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
+            var user = await uow.UserRepository.GetUserByNameAsync(username);
+            user.LastActive = DateTime.UtcNow;
+            await uow.Commit();
         }
     }
 }

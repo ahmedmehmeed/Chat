@@ -42,10 +42,6 @@ namespace ChattingApp.Controller
 
         }
 
-        //private async Task< bool> userExist(String username)
-        //{
-        //    return await dbContxt.Users.AnyAsync(x => x.Username == username);
-        //}
 
 
 
@@ -61,7 +57,6 @@ namespace ChattingApp.Controller
                 return BadRequest(result.Message);
             if (!string.IsNullOrEmpty(result.RefreshToken))
                 SetRefreshTokenInCookies(result.RefreshToken, result.RefreshTokenEXpiration);
-            // anomnyous object
             // return Ok(new { Token = result.Token, Roles = result.Roles, ExpireOn = result.RefreshTokenEXpiration });
              return Ok(result);
 
